@@ -166,3 +166,19 @@ ai-faq-rag/
     ├── generation/   ← generator, prompt engineering
     └── api/          ← FastAPI (main.py)
 ```
+
+---
+
+## 📊 Résultats d'évaluation
+
+Évaluation sur 10 questions (7 in-scope + 3 hors-scope) basée sur `livraison.txt` :
+
+| Métrique | Score |
+|---|---|
+| Score global | **0.90** (9/10) |
+| Questions in-scope | **1.00** (6/6) ✅ |
+| Questions hors-scope | **0.75** (3/4) ✅ |
+| Latence moyenne | ~16s (CPU, sans GPU) |
+| Évaluation | 🔥 Très bon |
+
+> Évaluation complète disponible dans `eval/results.json`
