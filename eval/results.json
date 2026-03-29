@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "date": "2026-03-29T18:39:55.678056",
+    "api_url": "http://localhost:8000/ask",
+    "total_questions": 10
+  },
+  "scores": {
+    "global": 0.9,
+    "in_scope": 1.0,
+    "out_scope": 0.75,
+    "avg_latency_ms": 16393
+  },
+  "results": [
+    {
+      "question": "Quelle est la politique de retour ?",
+      "ground_truth": "Nous n'avons pas d'information",
+      "answer": "Réponse : Nous n'avons pas d'informations sur la politique de retour dans notre documentation.\nSources : []",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "low",
+      "score": 1,
+      "latency_ms": 15541
+    },
+    {
+      "question": "Quels sont les délais de livraison ?",
+      "ground_truth": "entre 2 et 5 jours",
+      "answer": "Réponse : Les délais de livraison estimés sont entre 2 et 5 jours ouvrables pour la livraison nationale, et peuvent varier entre 5 et 15 jours ouvrables pour la livraison internationale.\nSources : [livraison.txt]",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "high",
+      "score": 1,
+      "latency_ms": 23980
+    },
+    {
+      "question": "Y a-t-il une garantie sur les produits ?",
+      "ground_truth": "garantie",
+      "answer": "Réponse : Oui, nous offrons une garantie sur nos produits.\nSources : [garantie.txt]",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "low",
+      "score": 1,
+      "latency_ms": 14911
+    },
+    {
+      "question": "Comment contacter le support ?",
+      "ground_truth": "support",
+      "answer": "Réponse : Vous pouvez contacter notre service client pour toute question concernant la livraison via l'email support@shopvite.com ou en utilisant le formulaire de contact sur notre site.\nSources : [livraison.txt]",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "medium",
+      "score": 1,
+      "latency_ms": 25532
+    },
+    {
+      "question": "Quels moyens de paiement sont acceptés ?",
+      "ground_truth": "paiement",
+      "answer": "Réponse : Les moyens de paiement acceptés sont indiqués lors du passage en caisse.\nSources : [livraison.txt]",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "medium",
+      "score": 1,
+      "latency_ms": 16349
+    },
+    {
+      "question": "Puis-je échanger un produit ?",
+      "ground_truth": "Je n'ai pas d'information",
+      "answer": "Réponse : Je n'ai pas d'information sur ce sujet dans notre documentation.\nSources : []",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "low",
+      "score": 1,
+      "latency_ms": 14267
+    },
+    {
+      "question": "Combien coûte la livraison ?",
+      "ground_truth": "livraison",
+      "answer": "Réponse : Le montant exact des frais de livraison est indiqué lors du passage en caisse.\nSources : [livraison.txt]",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "medium",
+      "score": 1,
+      "latency_ms": 17286
+    },
+    {
+      "question": "Quel est le salaire du PDG ?",
+      "ground_truth": "Je n'ai pas d'information",
+      "answer": "Réponse : Je n'ai pas d'information sur ce sujet dans notre documentation.\nSources : []",
+      "sources": [],
+      "confidence": "low",
+      "score": 1,
+      "latency_ms": 12572
+    },
+    {
+      "question": "Où est situé le siège social ?",
+      "ground_truth": "Je n'ai pas d'information",
+      "answer": "Réponse : Je n'ai pas d'information sur ce sujet dans notre documentation.\nSources : []",
+      "sources": [
+        "livraison.txt"
+      ],
+      "confidence": "low",
+      "score": 1,
+      "latency_ms": 12378
+    },
+    {
+      "question": "Est-ce que vous vendez des voitures ?",
+      "ground_truth": "Je n'ai pas d'information",
+      "answer": "Réponse : Nous ne vendons pas de voitures.\nSources : []",
+      "sources": [],
+      "confidence": "low",
+      "score": 0,
+      "latency_ms": 11111
+    }
+  ]
+}

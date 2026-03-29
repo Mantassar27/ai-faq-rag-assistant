@@ -7,7 +7,7 @@ import os
 import time
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-load_dotenv()  # ← charge le .env AVANT tout import
+load_dotenv()
 
 import shutil
 from pathlib import Path
@@ -25,10 +25,6 @@ from src.retrieval import retrieve
 from src.generation import generate
 
 
-# ─────────────────────────────────────────────────────────────
-# Schémas Pydantic
-# ─────────────────────────────────────────────────────────────
-
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=3, max_length=1000, example="Quelle est la politique de retour ?")
     k: int        = Field(default=5,  ge=1, le=20, description="Nombre de chunks à récupérer")
@@ -37,14 +33,15 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer:     str
     sources:    list[str]
-    confidence: str          # "high" | "medium" | "low"
+    contexts:   list[str]        # ← ajouté pour RAGAS
+    confidence: str
     latency_ms: int
 
 
 class UploadResponse(BaseModel):
-    filename:    str
+    filename:       str
     chunks_created: int
-    doc_count:   int
+    doc_count:      int
 
 
 class HealthResponse(BaseModel):
@@ -54,22 +51,17 @@ class HealthResponse(BaseModel):
     doc_count:  int
 
 
-# ─────────────────────────────────────────────────────────────
-# État global (chargé une seule fois au démarrage)
-# ─────────────────────────────────────────────────────────────
-
 state: dict = {}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Charge le modèle et ChromaDB au démarrage de l'API."""
     print("[api] 🚀 Démarrage — chargement des ressources...")
 
-    model_name       = os.getenv("EMBEDDING_MODEL",   "all-MiniLM-L6-v2")
-    chroma_dir       = os.getenv("CHROMA_DIR",        "./data/chroma_db")
-    collection_name  = os.getenv("COLLECTION_NAME",   "faq_chunks")
-    llm_backend      = os.getenv("LLM_BACKEND",       "ollama")  # défaut = ollama
+    model_name      = os.getenv("EMBEDDING_MODEL",  "paraphrase-multilingual-MiniLM-L12-v2")
+    chroma_dir      = os.getenv("CHROMA_DIR",       "./data/chroma_db")
+    collection_name = os.getenv("COLLECTION_NAME",  "faq_chunks")
+    llm_backend     = os.getenv("LLM_BACKEND",      "ollama")
 
     print(f"[api] LLM_BACKEND = '{llm_backend}'")
     print(f"[api] EMBEDDING_MODEL = '{model_name}'")
@@ -86,10 +78,6 @@ async def lifespan(app: FastAPI):
     print("[api] 🛑 Arrêt de l'API")
 
 
-# ─────────────────────────────────────────────────────────────
-# Application FastAPI
-# ─────────────────────────────────────────────────────────────
-
 app = FastAPI(
     title="AI FAQ RAG API",
     description="Pipeline RAG pour répondre aux questions e-commerce",
@@ -105,13 +93,8 @@ app.add_middleware(
 )
 
 
-# ─────────────────────────────────────────────────────────────
-# Endpoints
-# ─────────────────────────────────────────────────────────────
-
 @app.get("/health", response_model=HealthResponse, tags=["Monitoring"])
 def health():
-    """Vérifie que l'API est opérationnelle."""
     collection = state.get("collection")
     return {
         "status":     "ok",
@@ -128,10 +111,6 @@ async def upload(
     chunk_size: int = 500,
     overlap: int = 50,
 ):
-    """
-    Upload un fichier (PDF / TXT / JSON), l'ingère et le stocke dans ChromaDB.
-    Formats acceptés : .txt, .md, .json, .pdf
-    """
     ALLOWED = {".txt", ".md", ".json", ".pdf"}
     suffix = Path(file.filename).suffix.lower()
 
@@ -141,7 +120,6 @@ async def upload(
             detail=f"Format '{suffix}' non supporté. Acceptés : {ALLOWED}",
         )
 
-    # Sauvegarde temporaire du fichier uploadé
     upload_dir = Path("./data/raw")
     upload_dir.mkdir(parents=True, exist_ok=True)
     dest = upload_dir / file.filename
@@ -153,15 +131,7 @@ async def upload(
         from src.ingestion import ingest
         from src.embedding import embed_chunks, store_chunks
 
-        # Ingestion : chargement + nettoyage + chunking
-        chunks = ingest(
-            str(dest),
-            strategy=strategy,
-            chunk_size=chunk_size,
-            overlap=overlap,
-        )
-
-        # Embedding + stockage ChromaDB
+        chunks     = ingest(str(dest), strategy=strategy, chunk_size=chunk_size, overlap=overlap)
         embeddings = embed_chunks(chunks, model=state["model"])
         store_chunks(state["collection"], chunks, embeddings)
 
@@ -177,11 +147,6 @@ async def upload(
 
 @app.post("/ask", response_model=AskResponse, tags=["RAG"])
 def ask(body: AskRequest):
-    """
-    Répond à une question en utilisant le pipeline RAG complet :
-      1. Retrieval des chunks pertinents
-      2. Génération de la réponse via LLM
-    """
     if not state.get("collection"):
         raise HTTPException(status_code=503, detail="Vector store non initialisé")
 
@@ -191,7 +156,6 @@ def ask(body: AskRequest):
     t0 = time.perf_counter()
 
     try:
-        # 1. Retrieval
         results = retrieve(
             query=body.question,
             collection=state["collection"],
@@ -200,7 +164,6 @@ def ask(body: AskRequest):
             score_threshold=0.30,
         )
 
-        # 2. Génération
         output = generate(
             question=body.question,
             results=results,
@@ -208,6 +171,8 @@ def ask(body: AskRequest):
         )
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
     latency_ms = int((time.perf_counter() - t0) * 1000)
@@ -215,6 +180,7 @@ def ask(body: AskRequest):
     return {
         "answer":     output["answer"],
         "sources":    output["sources"],
+        "contexts":   [r["text"] for r in results],  # ← pour RAGAS
         "confidence": output["confidence"],
         "latency_ms": latency_ms,
     }

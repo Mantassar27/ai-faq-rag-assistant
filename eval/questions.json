@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Quelle est la politique de retour ?",
+    "ground_truth": "Nous n'avons pas d'information"
+  },
+  {
+    "question": "Quels sont les délais de livraison ?",
+    "ground_truth": "entre 2 et 5 jours"
+  },
+  {
+    "question": "Y a-t-il une garantie sur les produits ?",
+    "ground_truth": "garantie"
+  },
+  {
+    "question": "Comment contacter le support ?",
+    "ground_truth": "support"
+  },
+  {
+    "question": "Quels moyens de paiement sont acceptés ?",
+    "ground_truth": "paiement"
+  },
+  {
+    "question": "Puis-je échanger un produit ?",
+    "ground_truth": "Je n'ai pas d'information"
+  },
+  {
+    "question": "Combien coûte la livraison ?",
+    "ground_truth": "livraison"
+  },
+  {
+    "question": "Quel est le salaire du PDG ?",
+    "ground_truth": "Je n'ai pas d'information"
+  },
+  {
+    "question": "Où est situé le siège social ?",
+    "ground_truth": "Je n'ai pas d'information"
+  },
+  {
+    "question": "Est-ce que vous vendez des voitures ?",
+    "ground_truth": "Je n'ai pas d'information"
+  }
+]

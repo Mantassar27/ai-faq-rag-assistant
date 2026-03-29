@@ -6,6 +6,8 @@ from __future__ import annotations
 import os
 import time
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+load_dotenv()  # ← charge le .env AVANT tout import
 
 import shutil
 from pathlib import Path
@@ -22,7 +24,7 @@ from src.embedding import (
 from src.retrieval import retrieve
 from src.generation import generate
 
-from dotenv import load_dotenv
+
 # ─────────────────────────────────────────────────────────────
 # Schémas Pydantic
 # ─────────────────────────────────────────────────────────────
@@ -67,7 +69,10 @@ async def lifespan(app: FastAPI):
     model_name       = os.getenv("EMBEDDING_MODEL",   "all-MiniLM-L6-v2")
     chroma_dir       = os.getenv("CHROMA_DIR",        "./data/chroma_db")
     collection_name  = os.getenv("COLLECTION_NAME",   "faq_chunks")
-    llm_backend      = os.getenv("LLM_BACKEND",       "openai")
+    llm_backend      = os.getenv("LLM_BACKEND",       "ollama")  # défaut = ollama
+
+    print(f"[api] LLM_BACKEND = '{llm_backend}'")
+    print(f"[api] EMBEDDING_MODEL = '{model_name}'")
 
     state["model"]           = load_model(model_name)
     state["model_name"]      = model_name
