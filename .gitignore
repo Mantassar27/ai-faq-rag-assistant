@@ -1,0 +1,20 @@
+# Environnement
+venv/
+.env
+
+# ChromaDB
+data/chroma_db/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Modèles téléchargés
+*.bin
+*.safetensors
+
+# OS
+.DS_Store
+Thumbs.db
